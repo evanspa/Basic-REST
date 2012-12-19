@@ -1,5 +1,24 @@
 # Design Notes
 
+## Free Form
+
+When a request comes in and your handler function is called, that 
+handler function needs to iterate over the media types and attempt to
+find a media type that is fit for the request.
+
+So, there's really 2 main things that need to be accomplished:
+
+1) You need a language for describing the static structure of a REST
+API.  
+
+2) The 'make-ring-handler' function is going to have the logic for
+matching a request to a media type, then to a resource, etc, etc.  
+This is most of the complexity, really.  The 'rest-api' function (or
+macro) is simply the language that allows a complicated map to be
+formed. 
+
+you need to iterate over the media types
+
 ## 'rest-api' macro
 
 The `rest-api` macro should return an instance of a clojure map.  The map will encapsulate all of the data that was supplied as arguments to the rest-api invocation.
