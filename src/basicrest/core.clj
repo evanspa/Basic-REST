@@ -48,20 +48,20 @@ a set of resource maps."}
 
 (defn
   get-media-types
-  "Returns the media types associated with the given REST API."
+  "Returns the media types of the given REST API."
   [rest-api]
   (:media-types rest-api))
 
 (defn
   get-matcher-fn
-  "Returns the matcher function associated with the given media type."
+  "Returns the matcher function of the given media type."
   [media-type]
   (:matcher-fn media-type))
 
 (defn
   is-match?
-  "Returns the evaluation result of the matcher function associated with the
-given media type relative to the given request."
+  "Returns the evaluation result of the truth functional matcher of the given
+media type subject to the given request."
   [request media-type]
   (let [matcher-fn (get-matcher-fn media-type)]
     (if (nil? matcher-fn)
@@ -70,8 +70,8 @@ given media type relative to the given request."
 
 (defn
   get-matched-media-type
-  "Returns the first media type whose matcher function evalulates to 'true'
-relative to the given request and the matcher's enclosing media type."
+  "Returns the first media type whose truth functional matcher evalulates to 
+'true' subject to the given request and the matcher's enclosing media type."
   [request media-types]
   (if (nil? media-types)
     nil
