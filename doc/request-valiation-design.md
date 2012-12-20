@@ -12,7 +12,7 @@ A REST API might be described like this:
      (media-type
        (range (type "application"))
        (allowed-parameters "s1" "w1""))))
-          
+```          
           
 The following 'Accept' header lines should be valid:
 
