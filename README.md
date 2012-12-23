@@ -2,6 +2,10 @@
 
 BasicREST is a Lisp-based DSL for describing REST APIs. 
 
+## Current status
+
+BasicREST does not have a release yet; it is currently under-development.
+
 ## Rationale
 
 The REST architectural style, paired with HTTP, provides an elegant frameowrk for building scalable, distributed systems.  Simply put, BasicREST provides a concise language for constructing REST APIs (aka RESTful services).
