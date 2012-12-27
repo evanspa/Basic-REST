@@ -31,7 +31,7 @@ request-enhancer-3-response-enhancer-1 augment the request map by
 adding a new request header of the same name,
 request-enhancer-3-response-enhancer-1's value will win.  If both
 functions modify the response in a similar manner, then
-request-enhancer-1-response-enhancer-3's value will win.
+request-enhancer-1-response-enhancer-3's value will win. 
                        
 (->
  main-routes

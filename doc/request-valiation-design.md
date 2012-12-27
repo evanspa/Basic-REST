@@ -28,4 +28,7 @@ The following 'Accept' header lines are NOT valid:
 > + Accept: application/foo.bar
 > + Accept: application/*;w2=someval;q=0.7
 
+# High-level Design Thoughts
++ Use push-down automata / formal language processing techniques to do the valiation
++ 
 
