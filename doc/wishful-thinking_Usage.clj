@@ -5,54 +5,56 @@
 (def my-rest-api-v100
   (rest-api
    "v1.0.0"
-   (supported-character-sets "UTF-8" "ISO-8859-1")
+   ; whether or not the desired (accepted) character set is supported or
+   ; not will be discovered at runtime (i.e., by the return value of
+   ; java.nio.charset.Charset.isAvailable() function).
    (supported-encodings "Identity" "GZIP")
+   (supported-languages "en-US")
    (non-std-extensions :plus-sign-suffixed-format-specifiers)
    (nonstrict-acceptability-defaults
     {"accept-charset" "UTF-8"
      "accept-encoding" "Identity"
      "accept-language" "en"})
    (uri-builder-config
-    {:uri-structure :parent-child
-     :prepend-restapi-version true})
-   (uri-transformer (fn [rest-api uri] ...))
+    {:prepend-restapi-version true})
+   (uri-transformer (fn [uri] ...))
    (supported-media-types
     (media-type
      (media-range "application" "vnd.foo.com")
-     (supported-formats
-      (character-based :xml :json))
-     (extension-param-names "paramNm1" "paramNm2")
-     (matcher-fn (fn [rest-api mt req] ...))
+     (supported-extension-params
+      (extension-param "paramNm1" (fn [... param-val] ...))
+      (extension-param "paramNm2" (fn [... param-val] ...)))
+     (matcher-fn (fn [mt req] ...)) ; if nil is supplied,
+     ; then perhaps by default a regex-based match will be
+     ; performed (the regex can be built automatically based on the
+     ; media range
      (supported-resources
       (resource
-       (resource-handle :fuel-purchases)
-       (static-uri "fuel-purchases")
-       (matcher-fn (fn [rest-api mt res req] ...))
+       (matcher-fn (fn [mt-ext-params res req] ...))
        (serialization
         :xml
-        (de-serializer (fn [rest-api mt res req] ...)))
+        (de-serializer (fn [mt-ext-params res req] ...)))
        (supported-methods
-        (http-post (fn [rest-api mt res req] ...))))
+        (http-post
+         (fn [mt-ext-params res req] ...) ;should return newly-created resource
+         (fn [mt-ext-params new-res] ...)))) ;should return URI of new resource
       (resource
-       (resource-handle :fuel-purchase)
-       (parent-resource :fuel-purchases)
-       (dynamic-uri (fn [rest-api mt res req] ...))
-       (matcher-fn (fn [rest-api mt res req] ...))
+       (matcher-fn (fn [mt-ext-params res req] ...))
        (serialization
         :xml
-        (serializer (fn [rest-api mt res req] ...))
-        (de-serializer (fn [rest-api mt res req] ...)))
+        (serializer (fn [mt-ext-params res req] ...))
+        (de-serializer (fn [mt-ext-params res req] ...)))
        (supported-methods
-        (http-put (fn [rest-api mt res req] ...))
-        (http-get (fn [rest-api mt res req] ...))
-        (http-delete (fn [rest-api mt res req] ...)))))))))
+        (http-put (fn [mt-ext-params res req] ...))
+        (http-get (fn [mt-ext-params res req] ...))
+        (http-delete (fn [mt-ext-params res req] ...)))))))))
 
 ;; Phase 2 functionality ('extends-*')
 (def my-rest-api-v101
   (rest-api
    "v1.0.1"
    (extends-rest-api
-    "v1.0.0"
+    my-rest-api-v100
     (extends-media-type
      (of-range
       "application" "vnd.foo.com"
@@ -78,7 +80,7 @@
   (rest-api
    "v2.0.0"
    (extends-rest-api
-    "v1.0.1"
+    my-rest-api-v101
     (extends-media-type
      (of-range
       "application" "vnd.foo.com"

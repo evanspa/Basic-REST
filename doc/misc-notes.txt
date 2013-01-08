@@ -1,0 +1,11 @@
+* Does a resource really need a handle to its parent?
+* Why does a resource even HAVE a parent?  There's nothing about the REST style
+  that says resources should have parents.
+* Perhaps the notion of "child / parent" should be an 'archetype' type when
+  defining a REST API.
+* Hmmm...perhaps there should be a notion of archetype (like Maven); i.e., when
+  expressing your REST API, perhaps there's an 'archetype' setting, and if you
+  pick "parent_child", then certain validations can be done to the REST API
+  you define.
+* Any other archetypes?  How about just "simple" - i.e, just a collection of
+  resources.

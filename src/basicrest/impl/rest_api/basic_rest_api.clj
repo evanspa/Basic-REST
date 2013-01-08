@@ -1,67 +1,64 @@
-(ns basicrest.impl.basic-rest-api
-  (:use [basicrest.rest-api]))
-
-;; (defn is-acceptable?
-;;   "Returns true"
-;;   [rest-api accept-hdr-name supported-vals-selector request]
-;;     (if (is-accept-strict? rest-api accept-hdr-name)
-;;       (let [accept-val (get-header-val request accept-hdr-name)
-;;             supported-vals (get-supported-vals-selector rest-api)]
-;;         (contains? supported-vals (lower-case accept-val)))
-;;       true))
-
-
-(defrecord BasicRestApiNonStrictAcceptDefault
-    [accept-hdr-name default-val]
-  RestApiNonStrictAcceptDefault
-)
+(ns basicrest.impl.rest-api.basic-rest-api
+  (:use [basicrest.impl.rest-api.rest-api-contract])
+  (:use [basicrest.impl.util :only
+         (is-accept-hdr-val-acceptable-if-strict?
+          is-charset-available-on-system?
+          get-header-val)]))
 
 (defrecord BasicRestApi
-    [version
-     character-sets
-     encodings
-     acceptability-strictness-config
-     nonstd-extensions
-     media-types]
+    [version encodings languages nonstd-extensions nonstrict-accept-defaults
+     uri-builder-config uri-transformer-fn media-types]
   RestApi
 
-  (get-acceptability-strictness-config [this]
-    (:acceptability-strictness this))
-
-  (get-supported-charsets [this]
-    (:character-sets this))
+  (get-version [this]
+    (:version this))
 
   (get-supported-encodings [this]
     (:encodings this))
 
-  (get-nonstd-extensions [this]
+  (get-supported-languages [this]
+    (:languages this))
+
+  (get-supported-nonstd-extensions [this]
     (:nonstd-extensions this))
 
-  (is-accept-strict? [this accept-hdr-name]
-    (let [strictness-config (get-acceptability-strictness-config this)]
-      (when-not (nil? strictness-config)
-        (= :strict (get strictness-config accept-hdr-name)))))
+  (get-nonstrict-accept-defaults [this]
+    (:nonstrict-accept-defaults this))
 
-  (get-nonstrict-accept-default [this accept-hdr]
-    (let [strictness-config (get-acceptability-strictness-config this)]
-      (and nil? strictness-config
-        (:default (get strictness-config accept-hdr-name)))))
+  (get-uri-builder-config [this]
+    (:uri-builder-config this))
+
+  (get-uri-transformer-fn [this]
+    (:uri-transformer-fn this))
 
   (is-charset-acceptable? [this request]
-    (is-acceptable? this "accept-charset" get-supported-charsets request))
+    (is-accept-hdr-val-acceptable-if-strict?
+     (get-nonstrict-accept-defaults this)
+     "accept-charset"
+     (fn [charset] (is-charset-available-on-system? charset))
+     request))
 
   (is-encoding-acceptable? [this request]
-    (is-acceptable? this "accept-encoding" get-supported-encodings request))
+    (contains? (get-supported-encodings this)
+               (get-header-val request "accept-encoding")))
 
   (is-language-acceptable? [this request]
-    (is-acceptable? this "accept-language" get-supported-languages request))
+    (contains? (get-supported-languages this)
+               (get-header-val request "accept-language")))
 
   (is-serialization-format-acceptable? [this request]
     ; for simplicity, we'll assume the 'Accept' header will always
     ; be of the form: 'application/vnd.foo.com+xml' (or something like
     ; this)
-
     )
+
+  (is-media-type-acceptable? [this request])
+
+  (contains-entity? [this request])
+
+  (is-entity-media-type-supported? [this request])
+
+  (is-entity-serialization-format-supported? [this request])
 
   (process-request [this request]
 

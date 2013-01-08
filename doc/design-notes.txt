@@ -1,0 +1,88 @@
+Okay - so first off: protocols you create using 'defprotocol' should not
+contain getters / setters; remember that one of the principals of Clojure
+/ Lisp is uniform data interfaces (using maps/sets/etc).  Therefore, a
+protocol should contain functions that are NOT simply getters / setters (keep
+in mind, that this differs from SICP's teaching of "data selectors" with
+"getter" functions). 
+
+Also - don't think of "defrecord" as implementations of protocols; this is
+the wrong way to think about them.  A defrecord is simply a way to create
+logically-related structured data.
+
+Therefore, you should create a "RestApi" protocol, and create a "RestApi" 
+defrecord that implements it.
+
+RestApi record:
+---------------
++ version (String)
++ set of media types
++ set of supported encodings
++ set of supported character sets
++ URI builder configuration
++ URI transformer function
++ set of supported languages
++ set of supported so-called non-standard extensions
+
+RestApi protocol?  Hmmm - I guess not.  
+
+In fact, do I have *any* protocols here?  Perhaps not.  Perhaps all
+I have are data containers!!!
+
+Let's start with that then.  Oh wait.  I forgot; I think I should have
+a RestApi protocol, with functions like: most-desired-charset.
+
+RestApi protocol:
+-------------------
++ most-desired-charset (in:restApi, in:httpReq)
++ most-desired-encoding (in:restApi, in:httpReq)
++ most-desired-language (in:restApi, in:httpReq)
++ most-desired-mediatype (in:restApi, in:httpReq)
+
+MediaType record:
+-----------------
++ type
++ subtype
++ quality-value
++ set of supported extended-params
+//+ set of supported mime-types (no wait; this should be derived from the
+serialization-maps of the given resources, yes!?)
++ set of supported resources
+
+MediaType protocol:
+-------------------
++ matched-resource (in:mediaType, in:httpReq)
+
+Resource record:
+----------------
++ matcher function
++ map of serialization maps 
++ map of http-method handlers
+
+// Resource protocol:
+// ------------------
+//  + get (in:resource, in:mediaTypeParamsMap, in:httpReq)
+//  + delete (in:resource, in:mediaTypeParamsMap, in:httpReq)
+//  + post (in:resource, in:mediaTypeParamsMap, in:httpReq)
+//  + put (in:resource, in:mediaTypeParamsMap, in:httpReq)
+//  + head (in:resource, in:mediaTypeParamsMap, in:httpReq)
+//  + options (in:resource, in:mediaTypeParamsMap, in:httpReq)
+
+(def fuelPurhase
+  (Resource. (fn [http-req] ...)
+             {:xml {...}}
+             {:get (fn [media-type-params http-req] ...)
+              :post (fn [media-type-params http-req] ...)
+              ...}))
+
+Namespaces:
+-----------
++ basicrest
++ basicrest.util
++ basicrest.impl.mediatype
++ basicrest.impl.restapi
++ basicrest.impl.resource
++ ...
+
+
+
+

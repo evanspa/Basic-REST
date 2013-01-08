@@ -1,0 +1,56 @@
+Some commentary on some of the HTTP "Accept-*" headers.  It is not enough for the
+RestApi abstraction to contain functions such as is-encoding-acceptable?, 
+is-language-acceptable? and is-media-type-acceptable?; for these are simple
+Boolean-valued functions.  Returning true or false is not enough.  I.e., when
+looking at the HTTP spec, it mentions that headers such as Accept-Encoding,
+Accept-Language and Accept can contain a quality-value parameter; and that
+multiple accepted-values can be specified, with differing quality values
+(indicating preference).
+
+Therefore, at the fundamental level, I need a function that takes as input
+the accept value, and returns a data structure that encodes the meaning
+of the accept value.
+
+For example, given the following Accept-Language header value:
+
+Accept-Language: da, en-gb;q=0.8, en;q=0.7
+
+the interpretation is: 
+
+"I prefer Danish, but will accept British English and other types of English."
+
+After parsing (both syntactic and semantic) the header value, I could
+produce a vector that looks like this:
+
+["da" "en-gb" "en"]
+
+The head of the vector represents the preferred language.  Any entry
+is deemed acceptable, but the preferred one is at index 0; the next-
+preferred at index 1; etc.
+
+The language for the RestApi to actually use is one in which the RestApi
+supports and which is in the vector; if the size of the intersection
+between the languages supported by the RestApi, and the ones in the
+vector is greater than 1, then the one nearest the head should be used.
+
+The vector above is a result of both syntactic parsing AND semantic
+analysis.  Semantic because the vector data structure incorporates
+the desired ordering; i.e., the MEANING of the quality numbers has
+been reasoned-against and is incorporated in the target representation (the
+vector).  
+
+But what should be the result of the first part of parsing - the syntactic
+parsing?  Perhaps a map - like so:
+
+{"en-gb "0.8"
+ "da" 1.0"
+ "en" "0.7"}
+
+The map is self explanatory.  It is simply a Clojure-map representation of the
+raw header value string.  
+
+Ok...at this point I've convinced myself that I need to create a new project; 
+a Clojure library that can take as input a set of Augmented BNF rules, and
+produce a function that receives as its input a string (like the one above that
+is the value of some Accept-Language HTTP header) and can parse it and return 
+some sort of Clojure data structure that contains the data.
