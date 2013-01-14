@@ -1,4 +1,4 @@
-(ns basicrest.impl.util
+(ns basicrest.util
   (:import (java.nio.charset Charset IllegalCharsetNameException)))
 
 (defn is-accept-strict?
@@ -10,6 +10,15 @@
   "Returns ..."
   [request hdr-name]
   (get (:headers request) hdr-name))
+
+(defn contains-entity?
+  [request]
+  (let [method (:request-method request)]
+    (or (= method :put)
+        (= method :post))))
+
+;; (defn entity-serialization-format
+;;   [request] ...)
 
 (defn is-accept-hdr-val-acceptable-if-strict?
   "Returns ..."
@@ -28,6 +37,11 @@
     (Charset/isSupported charset-name)
     (catch IllegalCharsetNameException exc
       false)))
+
+(defn parse-serialization-format
+  [content-type-val]
+  ;TODO
+  )
 
 (defn parse-media-types
   "Parses the media types from the given string and returns a vector of media
