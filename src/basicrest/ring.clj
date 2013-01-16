@@ -1,5 +1,28 @@
-(ns basicrest.ring
-  (:use [basicrest.protocols.http-request-acceptability
+;   Copyright (c) 2013 Paul Evans
+
+;   Permission is hereby granted, free of charge, to any person obtaining a
+;   copy of this software and associated documentation files (the "Software"),
+;   to deal in the Software without restriction, including without limitation
+;   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+;   and/or sell copies of the Software, and to permit persons to whom the
+;   Software is furnished to do so, subject to the following conditions:
+
+;   The above copyright notice and this permission notice shall be included
+;   in all copies or substantial portions of the Software.
+
+;   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+;   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+;   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+;   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+;   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+;   DEALINGS IN THE SOFTWARE.
+
+(ns ^{:doc "The functionality responsible for creating Ring handler functions
+from a RestApi definition."
+      :author "Paul Evans"}
+    basicrest.ring
+  (:use [basicrest.protocols.http
          :only [most-desired-accepted-mediatype
                 acceptable-mediatypes
                 most-desired-accepted-charset
@@ -7,15 +30,13 @@
                 most-desired-accepted-encoding
                 acceptable-encodings
                 most-desired-accepted-language
-                acceptable-languages]])
+                acceptable-languages
+                matched-entity-mediatype
+                matched-resource]])
   (:use [basicrest.util
          :only [contains-entity?
                 parse-serialization-format]])
-  (:use [basicrest.protocols.http-request-supportability
-         :only [matched-entity-mediatype]])
-  (:use [basicrest.protocols.http-request-processor
-         :only [matched-resource]])
-  (:import [basicrest.types.resource_entities AcceptabilityEntity]))
+  (:import [basicrest.resources AcceptabilityReportResource]))
 
 (defn make-ring-handler-fn
   "Makes and returns a Ring handler function from the given REST API instance."
@@ -39,26 +60,26 @@
                matched-accept-encoding
                matched-accept-language)
         (let [matched-resource (matched-resource restapi req)]
-          (if (not (nil? matched-resource))
+          (if-not (nil? matched-resource)
             (let [req-has-entity (contains-entity? req)
                   http-method (:request-method req)
                   http-method-fns (:http-method-fns matched-resource)
                   http-method-fn (get http-method-fns http-method)]
-              (if (not (nil? http-method-fn))
+              (if-not (nil? http-method-fn)
                 (if req-has-entity
                   (let [matched-entity-mt
                         (when req-has-entity
                           (matched-entity-mediatype restapi req))]
-                    (if (not (nil? matched-entity-mt))
+                    (if-not (nil? matched-entity-mt)
                       (let [req-ent-serialization-format
                             (parse-serialization-format
                              (get req-headers
                                   "Content-Type"))]
-                        (if (not (nil? req-ent-serialization-format))
+                        (if-not (nil? req-ent-serialization-format)
                           (let [serializer-fns
                                 (get (:serializers matched-resource)
                                      req-ent-serialization-format)]
-                            (if (not (nil? serializer-fns))
+                            (if-not (nil? serializer-fns)
                               (let [req-ent ((:de-serializer serializer-fns)
                                              (:body req))]
                                 (http-method-fn req-ent req))
@@ -73,7 +94,7 @@
                    (:unacceptability-notice-content-type restapi)}
          :body
          ((:unacceptability-notice-entity-deserializer restapi)
-          (AcceptabilityEntity. supported-accept-mts
-                                supported-accept-charsets
-                                supported-accept-encodings
-                                supported-accept-languages))}))))
+          (AcceptabilityReportResource. supported-accept-mts
+                                        supported-accept-charsets
+                                        supported-accept-encodings
+                                        supported-accept-languages))}))))

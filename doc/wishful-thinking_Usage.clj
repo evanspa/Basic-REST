@@ -18,6 +18,10 @@
    (uri-builder-config
     {:prepend-restapi-version true})
    (uri-transformer (fn [uri] ...))
+   (unacceptability-notice
+    (content-type
+     "application/vnd.foo.unacceptability-notice+XML;charset=UTF-8")
+    (serialization-fn (fn [acceptability-entity] ...)))
    (supported-media-types
     (media-type
      (media-range "application" "vnd.foo.com")
@@ -48,6 +52,8 @@
         (http-put (fn [mt-ext-params res req] ...))
         (http-get (fn [mt-ext-params res req] ...))
         (http-delete (fn [mt-ext-params res req] ...)))))))))
+
+
 
 ;; Phase 2 functionality ('extends-*')
 (def my-rest-api-v101

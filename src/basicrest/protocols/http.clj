@@ -57,6 +57,18 @@ given acceptability abstraction.")
   (acceptable-mediatypes [this] "Returns the set of media types acceptable to
 the given acceptability abstraction.")
 
+  (default-val-if-nonstrict-acccept-header [this header-name] "Returns the
+default value associated with the given accept header name for the given
+acceptability abstraction.  If no default value exists, or if the given accept
+header is considered strict, then nil is returned.
+
+For example, in the HTTP/1.1 spec, some accept headers are not strictly required
+to be supplied by the client; if the client omits an Accept-Charset header, the
+server is allowed to assume that any character set is acceptable.  If the given
+acceptability abstraciton supplied follows the guidance of the HTTP spec, then
+headers such as Accept-Charset, when supplied to this function, should return
+the appropriate default character set name to use.")
+
   (most-desired-accepted-charset [this request] "Returns the character set
 that is both advertised as acceptable by the request and is supported by the
 given acceptability abstraction.")
@@ -77,11 +89,11 @@ acceptability abstraction."))
   "The capability to determine the supportability characteristics for a given
 HTTP request."
 
-  (matched-entity-mediatype [this request] "Returns the media type of the
-request entity, as advertised by the 'Content-Type' header; or nil if the
-media type is not supported by the supportability abstraction."))
+  (matched-entity-mediatype [this request] "Returns the intersection of the
+media types supported by the given supportability abstraction and the media
+type of the entity of the request (as documented by the 'Content-Type' header;
+or nil if the media type is not supported.")
 
-(defprotocol HttpRequestProcessor
-  ""
-
-  (matched-resource [this request]))
+  (matched-resource [this request] "Returns the intersection of the resources
+known to the supportability abstraction and the subject of the HTTP request; or
+nil if the resource is not supported."))
