@@ -45,8 +45,8 @@ is not provided in the request for a given accepted value, then 1 is assumed.
 If the quality value for each of the values in the intersection is the same,
 then a random one is returned."
 
-  (acceptable-charsets [this] "Returns the set of character sets acceptable
-to the given acceptability abstraction.")
+  (acceptable-charsets [this] "Returns the set of character sets, installed on
+the given system, acceptable to the given acceptability abstraction.")
 
   (acceptable-encodings [this] "Returns the set of encodings acceptable to the
 given acceptability abstraction.")
@@ -57,7 +57,7 @@ given acceptability abstraction.")
   (acceptable-mediatypes [this] "Returns the set of media types acceptable to
 the given acceptability abstraction.")
 
-  (default-val-if-nonstrict-acccept-header [this header-name] "Returns the
+  (nonstrict-accept-default [this header-name] "Returns the
 default value associated with the given accept header name for the given
 acceptability abstraction.  If no default value exists, or if the given accept
 header is considered strict, then nil is returned.

@@ -23,11 +23,6 @@
     basicrest.util
   (:import [java.nio.charset Charset IllegalCharsetNameException]))
 
-(defn is-accept-strict?
-  "Returns true "
-  [nonstrict-accept-defaults accept-hdr-name]
-  (nil? (get nonstrict-accept-defaults accept-hdr-name)))
-
 (defn get-header-val
   "Returns the value of the header with name hdr-value in request; if the
 header does not exist, nil is returned."

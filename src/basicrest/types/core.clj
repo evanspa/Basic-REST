@@ -24,7 +24,8 @@
   (:use [basicrest.protocols.http :only
          [HttpRequestAcceptability
           HttpRequestSupportability]])
-  (:use [basicrest.protocols.core :only [Printable to-string]])
+  (:use [basicrest.protocols.core
+         :only [Printable to-string]])
   (:import (java.nio.charset Charset)
            (java.util SortedMap)))
 
@@ -41,15 +42,20 @@
 (extend-type RestApi
   HttpRequestAcceptability
   (acceptable-charsets [this]
-    (let [charsets (Charset/availableCharsets)]))
+    (let [charsets (Charset/availableCharsets)]
+      charsets))
 
   (acceptable-encodings [this]
     (:encodings this))
 
-  (acceptable-languages [this] )
+  (acceptable-languages [this]
+    (:languages this))
 
   (acceptable-mediatypes [this]
     (map to-string (:media-types this)))
+
+  (nonstrict-accept-default [this header]
+    (get (:nonstrict-accept-defaults this) header))
 
   (most-desired-accepted-charset [this request]
     ; TODO (need to do formal language type stuff)
