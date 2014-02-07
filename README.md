@@ -1,16 +1,19 @@
-# BasicREST
+# UPDATE
+I no longer maintain this project.  I discovered [Liberator](http://clojure-liberator.github.io/liberator/), and am very happy with using it.
+
+## BasicREST
 
 BasicREST is a Lisp-based DSL for describing REST APIs. 
 
-## Current status
+### Current status
 
 BasicREST does not have a release yet; it is currently under-development.
 
-## Rationale
+### Rationale
 
 The REST architectural style, paired with HTTP, provides an elegant frameowrk for building scalable, distributed systems.  Simply put, BasicREST provides a concise language for constructing REST APIs (aka RESTful services).
 
-## Usage
+### Usage
 
 Using BasicREST, one defines a REST API in terms of a set of media types.  A media type is a container for a set of resources.  When defining individual resources, a matcher function (predicate) needs to be provided that is used to determine if the current HTTP request matches-up to that resource.  Upon finding a match, additional functions, provided by the user, will be used to process the request.  For example, if the request contains an entity (in the case of HTTP PUT or POSTs), a function provided by the user will be used to deserialize the entity (into some data structure).  A user-provided function will be used to serialize the response entity.
 
@@ -58,11 +61,11 @@ Once matched against a resource, the request entity (for PUT/POST only) will be 
 
 The decision as to which deserializer function to use to parse the request entity depends on the value of the `Content-type` header of the request.  For example, if the value of the Content-Type header is `application/vnd.hello+XML;charset=UTF-8`, then `myhello.core/my-xml-deserializer` will be used.  The decision as to which serializer to use depends on the value of the `Accept` header of the request.  For example, if the value of the Accept header is `application/vnd.hello+JSON`, then `myhello.core/my-json-serializer` will be used to produce the serialized response entity.  
 
-## Documentation
+### Documentation
 
 * [Wiki](https://github.com/evanspa/BasicREST/wiki)
 
-## License
+### License
 
 Copyright © 2012 Paul Evans
 
